@@ -1,0 +1,44 @@
+---
+- hosts: metrics_source
+  become: yes
+  vars:
+    telegraf_url: https://dl.influxdata.com/telegraf/releases/telegraf-1.8.3-1.x86_64.rpm
+    metric_storage_ip: 172.31.25.10
+  tasks:
+    - name: "Install telegraf"
+      yum:
+        name: "{{telegraf_url}}"
+        state: present
+    - template:
+        src: templates/telegraf.conf
+        dest: /etc/telegraf/telegraf.conf
+    - service:
+        name: telegraf
+        state: restarted
+
+
+- hosts: metrics_storage
+  become: yes
+  vars:
+    influxDb_url: https://dl.influxdata.com/influxdb/releases/influxdb-1.7.1.x86_64.rpm
+  tasks:
+    - name: "Install influx DB"
+      yum:
+        name: "{{influxDb_url}}"
+        state: present
+    - service:
+        name: influxdb
+        state: restarted
+
+- hosts: metrics_visualization
+  become: yes
+  vars:
+    grafana_url: https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.3.4-1.x86_64.rpm
+  tasks:
+    - name: "Install grafana"
+      yum:
+        name: "{{grafana_url}}"
+        state: present
+    - service:
+        name: grafana-server
+        state: restarted

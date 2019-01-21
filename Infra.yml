@@ -1,0 +1,18 @@
+---
+- hosts: proxy_server
+  become: yes
+  vars:
+    domain: 18.196.120.206
+    app1_external_ip: 172.31.18.45:8080
+  tasks:
+    - include_tasks: setup_proxy.yml
+- hosts: application_nodes
+  become: yes
+  vars:
+    jar_location: /home/ec2-user/environment/200415/adsk/templates/carrental.jar
+    app_location: /opt/carrental/carrental.jar
+    app_user: carrental
+    # telegraf_url: https://dl.influxdata.com/telegraf/releases/telegraf-1.8.3-1.x86_64.rpm
+    # metrics_storage_ip: 18.197.31.115
+  tasks:
+    - include_tasks: start_app.yml

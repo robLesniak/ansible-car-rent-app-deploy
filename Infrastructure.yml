@@ -1,0 +1,22 @@
+---
+- hosts: proxy_server
+  become: yes
+  vars:
+    epel_repo_rmp: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  tasks:
+    - name: "install exta packages repo"
+      yum:
+        name: "{{ epel_repo_rmp }}"
+        state: present
+    - name: "install nginx"
+      yum:
+        name: "nginx"
+        state: present
+    - name: "place app cfg int place"
+      template:
+        src: templates/application.conf
+        dest: /etc/nginx/conf.d/application.conf
+    - name: "start nginx service"
+      service:
+        name: "nginx"
+        state: restarted
